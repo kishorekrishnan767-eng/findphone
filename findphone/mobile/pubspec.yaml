@@ -1,0 +1,58 @@
+name: findphone
+description: "FindPhone: share this phone's latest location with anyone who knows its number, with consent."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State, navigation
+  flutter_riverpod: ^3.0.0
+  go_router: ^17.5.0
+
+  # Firebase
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0
+  firebase_app_check: ^0.4.8
+
+  # Location, background work, permissions
+  geolocator: ^14.1.1
+  # 13.x needs Android Gradle Plugin 9 + compileSdk 37; Flutter 3.41 templates use AGP 8.
+  permission_handler: ^12.0.3
+  flutter_background_service: ^5.1.0
+
+  # Device and local state
+  device_info_plus: ^13.3.0
+  battery_plus: ^7.1.2
+  connectivity_plus: ^7.3.1
+  shared_preferences: ^2.5.6
+  flutter_secure_storage: ^11.2.0
+  crypto: ^3.0.7
+
+  # UI
+  lucide_icons_flutter: ^3.1.22
+  url_launcher: ^6.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  fake_async: ^1.3.3
+
+flutter:
+  uses-material-design: true
+
+  # Variable fonts (SIL OFL 1.1, licences alongside). Weight is driven via FontVariation in tokens.g.dart.
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Variable.ttf
+    - family: JetBrains Mono
+      fonts:
+        - asset: assets/fonts/JetBrainsMono-Variable.ttf

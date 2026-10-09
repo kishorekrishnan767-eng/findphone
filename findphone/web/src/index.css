@@ -1,0 +1,341 @@
+@import 'tailwindcss';
+@import './design-system/tokens.css';
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--fp-bg-canvas);
+    color: var(--fp-text-primary);
+    font-family: var(--fp-font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Tabular figures keep timestamps and coordinates from jittering as they update. */
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: var(--fp-accent-subtle);
+    color: var(--fp-accent-on-subtle);
+  }
+}
+
+/* ---- Motion (design-system.md §5): purposeful only, off under reduced motion ---------------- */
+
+@keyframes fp-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fp-enter {
+  animation: fp-enter var(--fp-duration-slow) var(--fp-ease-standard) both;
+}
+
+@keyframes fp-skeleton {
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.fp-skeleton {
+  animation: fp-skeleton 1200ms ease-in-out infinite;
+}
+
+@keyframes fp-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* Live badge dot */
+.fp-pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: inherit;
+  animation: fp-pulse var(--fp-duration-pulse) var(--fp-ease-standard) infinite;
+}
+
+/* ---- Device marker: teal dot, white ring, thin dark outer edge (visible on any tile) ---------- */
+
+.fp-marker {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.fp-marker__dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--fp-map-marker);
+  border: 3px solid var(--fp-map-marker-halo);
+  box-shadow:
+    0 0 0 1px var(--fp-map-marker-outline),
+    var(--fp-shadow-e1);
+  transition: background-color var(--fp-duration-fast) var(--fp-ease-standard);
+}
+
+.fp-marker__pulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: var(--fp-map-marker);
+  animation: fp-pulse var(--fp-duration-pulse) var(--fp-ease-standard) infinite;
+}
+
+/* Old data looks old: grey fill, no pulse. */
+.fp-marker.is-stale .fp-marker__dot {
+  background: var(--fp-text-tertiary);
+}
+
+.fp-marker.is-stale .fp-marker__pulse {
+  display: none;
+}
+
+/* MapLibre's compact attribution, in our type and colours. */
+.maplibregl-ctrl-attrib {
+  font-family: var(--fp-font-sans);
+  font-size: 11px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-enter {
+    animation: fp-fade var(--fp-duration-fast) linear both;
+  }
+  .fp-skeleton,
+  .fp-pulse-dot::after,
+  .fp-marker__pulse {
+    animation: none;
+    display: none;
+  }
+  .fp-marker__dot {
+    transition: none;
+  }
+}
+
+@keyframes fp-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---- Staggered reveal: children enter one after another (result card, its rows, map controls) */
+
+.fp-stagger > * {
+  animation: fp-enter var(--fp-duration-slow) var(--fp-ease-standard) both;
+}
+.fp-stagger > :nth-child(2) { animation-delay: 40ms; }
+.fp-stagger > :nth-child(3) { animation-delay: 80ms; }
+.fp-stagger > :nth-child(4) { animation-delay: 120ms; }
+.fp-stagger > :nth-child(5) { animation-delay: 160ms; }
+.fp-stagger > :nth-child(6) { animation-delay: 200ms; }
+.fp-stagger > :nth-child(n + 7) { animation-delay: 240ms; }
+
+/* Rows inside the card start after the header and actions have landed. */
+.fp-stagger--late > :nth-child(1) { animation-delay: 120ms; }
+.fp-stagger--late > :nth-child(2) { animation-delay: 160ms; }
+.fp-stagger--late > :nth-child(3) { animation-delay: 200ms; }
+.fp-stagger--late > :nth-child(4) { animation-delay: 240ms; }
+.fp-stagger--late > :nth-child(5) { animation-delay: 280ms; }
+.fp-stagger--late > :nth-child(n + 6) { animation-delay: 320ms; }
+
+/* ---- Status badge: a small pop whenever the status changes ---------------------------------- */
+
+@keyframes fp-pop {
+  0% { transform: scale(0.85); opacity: 0; }
+  60% { transform: scale(1.04); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.fp-pop {
+  animation: fp-pop var(--fp-duration-slow) var(--fp-ease-standard) both;
+}
+
+/* ---- Marker: pops in on first appearance, sends one ripple outward ------------------------- */
+
+.fp-marker__body {
+  position: absolute;
+  inset: 0;
+  animation: fp-marker-pop 420ms var(--fp-ease-standard) both;
+}
+
+@keyframes fp-marker-pop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+.fp-marker__ripple {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--fp-map-marker-halo);
+  animation: fp-ripple 900ms var(--fp-ease-standard) 200ms both;
+}
+
+@keyframes fp-ripple {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(5); opacity: 0; }
+}
+
+/* ---- Map scan overlay: rings + rotating beam while a lookup is in flight ------------------- */
+
+.fp-scan {
+  opacity: 0;
+  transition: opacity var(--fp-duration-slow) var(--fp-ease-standard);
+}
+.fp-scan[data-active] {
+  opacity: 1;
+}
+
+.fp-scan__radar {
+  position: relative;
+  width: min(52vmin, 360px);
+  aspect-ratio: 1;
+}
+
+.fp-scan__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2.5px solid var(--fp-map-marker-halo);
+  box-shadow:
+    0 0 0 1px var(--fp-map-marker-outline),
+    inset 0 0 24px color-mix(in srgb, var(--fp-map-marker) 35%, transparent);
+  opacity: 0;
+  animation: fp-scan-ring 2400ms var(--fp-ease-move) infinite;
+}
+.fp-scan__ring:nth-child(2) { animation-delay: 800ms; }
+.fp-scan__ring:nth-child(3) { animation-delay: 1600ms; }
+
+@keyframes fp-scan-ring {
+  0% { transform: scale(0.1); opacity: 1; }
+  70% { opacity: 0.55; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+.fp-scan__beam {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 250deg,
+    color-mix(in srgb, var(--fp-map-marker-halo) 30%, transparent) 330deg,
+    color-mix(in srgb, var(--fp-map-marker-halo) 75%, transparent) 360deg
+  );
+  /* Fade the beam toward the edge so it reads as a sweep, not a pie slice. */
+  mask-image: radial-gradient(circle, black 0%, black 60%, transparent 71%);
+  animation: fp-spin 1800ms linear infinite;
+}
+
+@keyframes fp-spin {
+  to { transform: rotate(360deg); }
+}
+
+.fp-scan__core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 9999px;
+  background: var(--fp-map-marker);
+  border: 3px solid var(--fp-map-marker-halo);
+  box-shadow: 0 0 0 1px var(--fp-map-marker-outline);
+}
+
+/* ---- Panel searching state: mini radar + animated ellipsis --------------------------------- */
+
+.fp-mini-radar {
+  position: relative;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+}
+
+.fp-mini-radar__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px solid var(--fp-accent-default);
+  opacity: 0;
+  animation: fp-scan-ring 1600ms var(--fp-ease-move) infinite;
+}
+.fp-mini-radar__ring:nth-child(2) { animation-delay: 800ms; }
+
+.fp-mini-radar__core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 9999px;
+  background: var(--fp-accent-default);
+}
+
+.fp-dots::after {
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  text-align: left;
+  animation: fp-dots 1200ms steps(4, end) infinite;
+}
+
+@keyframes fp-dots {
+  0% { content: ''; }
+  25% { content: '.'; }
+  50% { content: '..'; }
+  75% { content: '...'; }
+}
+
+/* ---- Reduced motion: everything above becomes static (fade only where it helps) ----------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-stagger > *,
+  .fp-pop,
+  .fp-marker__body {
+    animation: fp-fade var(--fp-duration-fast) linear both;
+    animation-delay: 0ms;
+  }
+  .fp-marker__ripple,
+  .fp-scan__beam,
+  .fp-scan__ring:nth-child(n + 2),
+  .fp-mini-radar__ring:nth-child(2) {
+    display: none;
+  }
+  .fp-scan__ring,
+  .fp-mini-radar__ring {
+    animation: none;
+    opacity: 0.6;
+  }
+  .fp-dots::after {
+    animation: none;
+    content: '...';
+  }
+}

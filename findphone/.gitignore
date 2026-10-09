@@ -1,0 +1,34 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+.dart_tool/
+build/
+
+# Environment and local Firebase config (examples are committed)
+.env
+.env.*
+!.env.example
+.firebaserc
+firebase/service-account.json
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+firebase/.emulator-data/
+
+# Flutter / platform
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/android/local.properties
+mobile/android/key.properties
+mobile/ios/Pods/
+*.jks
+*.keystore
+
+# Editors / OS
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+.DS_Store
+Thumbs.db

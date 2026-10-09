@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status-bar icon for the sharing notification (Lucide "locate-fixed"). Overrides the plugin's
+     default icon of the same name. Monochrome by Android's rules. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:pathData="M2,12L5,12M19,12L22,12M12,2L12,5M12,19L12,22M19,12A7,7 0,1 1,5 12A7,7 0,1 1,19 12M15,12A3,3 0,1 1,9 12A3,3 0,1 1,15 12"
+        android:strokeWidth="2"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

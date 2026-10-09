@@ -1,0 +1,23 @@
+{
+  "name": "@findphone/firebase",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "emulators": "firebase emulators:start --project demo-findphone",
+    "test": "node scripts/rules-test.mjs",
+    "deploy:rules": "firebase deploy --only firestore:rules",
+    "deploy:indexes": "firebase deploy --only firestore:indexes",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "cleanup:stale": "node scripts/cleanup-stale.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@types/node": "^20.19.0",
+    "firebase": "^12.19.0",
+    "firebase-tools": "^15.33.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11",
+    "firebase-admin": "^13.10.0"
+  }
+}

@@ -1,0 +1,414 @@
+{
+  "meta": {
+    "name": "FindPhone",
+    "version": "1.0.0",
+    "note": "Single source of truth. Run `npm run gen` to regenerate web/src/design-system/tokens.css and mobile/lib/core/generated/tokens.g.dart."
+  },
+  "color": {
+    "light": {
+      "bg": {
+        "canvas": "#fafafa",
+        "surface": "#ffffff",
+        "raised": "#ffffff",
+        "subtle": "#f4f4f5",
+        "hover": "#f4f4f5",
+        "pressed": "#e9e9ec",
+        "inverse": "#18181b"
+      },
+      "border": {
+        "subtle": "#ececef",
+        "default": "#e4e4e7",
+        "control": "#8a8a93"
+      },
+      "text": {
+        "primary": "#18181b",
+        "secondary": "#52525b",
+        "tertiary": "#67676f",
+        "disabled": "#a1a1aa",
+        "onInverse": "#fafafa",
+        "onAccent": "#ffffff",
+        "link": "#0f766e"
+      },
+      "accent": {
+        "default": "#0f766e",
+        "hover": "#115e59",
+        "pressed": "#134e4a",
+        "subtle": "#e7f4f2",
+        "onSubtle": "#115e59"
+      },
+      "focus": {
+        "ring": "#0d9488"
+      },
+      "destructive": {
+        "default": "#b91c1c",
+        "hover": "#991b1b",
+        "pressed": "#7f1d1d",
+        "onDefault": "#ffffff",
+        "text": "#b91c1c",
+        "subtle": "#fef2f2"
+      },
+      "status": {
+        "live": {
+          "fg": "#15803d",
+          "bg": "#edfbf2",
+          "dot": "#16a34a"
+        },
+        "stale": {
+          "fg": "#a14a05",
+          "bg": "#fdf6e7",
+          "dot": "#d97706"
+        },
+        "danger": {
+          "fg": "#b91c1c",
+          "bg": "#fef2f2",
+          "dot": "#dc2626"
+        },
+        "paused": {
+          "fg": "#52525b",
+          "bg": "#f4f4f5",
+          "dot": "#71717a"
+        }
+      },
+      "map": {
+        "marker": "#0f766e",
+        "markerHalo": "#ffffff",
+        "markerOutline": "#09090b3d",
+        "accuracyFill": "#0d948824",
+        "accuracyStroke": "#0d948873"
+      },
+      "overlay": {
+        "scrim": "#09090b52"
+      }
+    },
+    "dark": {
+      "bg": {
+        "canvas": "#09090b",
+        "surface": "#141417",
+        "raised": "#1b1b1f",
+        "subtle": "#202024",
+        "hover": "#26262b",
+        "pressed": "#2e2e34",
+        "inverse": "#f4f4f5"
+      },
+      "border": {
+        "subtle": "#222226",
+        "default": "#2e2e33",
+        "control": "#71717b"
+      },
+      "text": {
+        "primary": "#f4f4f5",
+        "secondary": "#b0b0b8",
+        "tertiary": "#93939c",
+        "disabled": "#5b5b63",
+        "onInverse": "#18181b",
+        "onAccent": "#042f2e",
+        "link": "#5eead4"
+      },
+      "accent": {
+        "default": "#2dd4bf",
+        "hover": "#5eead4",
+        "pressed": "#14b8a6",
+        "subtle": "#0f2e2b",
+        "onSubtle": "#99f6e4"
+      },
+      "focus": {
+        "ring": "#5eead4"
+      },
+      "destructive": {
+        "default": "#dc2626",
+        "hover": "#b91c1c",
+        "pressed": "#991b1b",
+        "onDefault": "#ffffff",
+        "text": "#f87171",
+        "subtle": "#2c1414"
+      },
+      "status": {
+        "live": {
+          "fg": "#4ade80",
+          "bg": "#0f2417",
+          "dot": "#22c55e"
+        },
+        "stale": {
+          "fg": "#fbbf24",
+          "bg": "#2a1f0a",
+          "dot": "#f59e0b"
+        },
+        "danger": {
+          "fg": "#f87171",
+          "bg": "#2c1414",
+          "dot": "#ef4444"
+        },
+        "paused": {
+          "fg": "#b0b0b8",
+          "bg": "#202024",
+          "dot": "#93939c"
+        }
+      },
+      "map": {
+        "marker": "#0d9488",
+        "markerHalo": "#ffffff",
+        "markerOutline": "#09090b66",
+        "accuracyFill": "#2dd4bf1f",
+        "accuracyStroke": "#2dd4bf66"
+      },
+      "overlay": {
+        "scrim": "#000000a3"
+      }
+    }
+  },
+  "space": {
+    "0": 0,
+    "1": 4,
+    "2": 8,
+    "3": 12,
+    "4": 16,
+    "5": 20,
+    "6": 24,
+    "8": 32,
+    "10": 40,
+    "12": 48,
+    "16": 64
+  },
+  "radius": {
+    "none": 0,
+    "xs": 4,
+    "md": 8,
+    "lg": 12,
+    "full": 9999
+  },
+  "size": {
+    "touchTarget": 44,
+    "controlMd": 44,
+    "controlSm": 36,
+    "iconSm": 16,
+    "iconMd": 20,
+    "iconLg": 24,
+    "panelWidth": 384,
+    "sheetPeek": 176,
+    "contentMaxWidth": 560
+  },
+  "elevation": {
+    "light": {
+      "e1": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 2,
+          "spread": 0,
+          "color": "#09090b0f"
+        }
+      ],
+      "e2": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 3,
+          "spread": 0,
+          "color": "#09090b14"
+        },
+        {
+          "x": 0,
+          "y": 4,
+          "blur": 12,
+          "spread": -2,
+          "color": "#09090b14"
+        }
+      ],
+      "e3": [
+        {
+          "x": 0,
+          "y": 2,
+          "blur": 6,
+          "spread": 0,
+          "color": "#09090b14"
+        },
+        {
+          "x": 0,
+          "y": 12,
+          "blur": 32,
+          "spread": -6,
+          "color": "#09090b2e"
+        }
+      ]
+    },
+    "dark": {
+      "e1": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 2,
+          "spread": 0,
+          "color": "#00000066"
+        }
+      ],
+      "e2": [
+        {
+          "x": 0,
+          "y": 1,
+          "blur": 3,
+          "spread": 0,
+          "color": "#00000080"
+        },
+        {
+          "x": 0,
+          "y": 8,
+          "blur": 24,
+          "spread": -4,
+          "color": "#00000080"
+        }
+      ],
+      "e3": [
+        {
+          "x": 0,
+          "y": 2,
+          "blur": 6,
+          "spread": 0,
+          "color": "#00000080"
+        },
+        {
+          "x": 0,
+          "y": 16,
+          "blur": 40,
+          "spread": -8,
+          "color": "#000000a3"
+        }
+      ]
+    }
+  },
+  "motion": {
+    "duration": {
+      "fast": 150,
+      "base": 200,
+      "slow": 250,
+      "markerGlide": 600,
+      "cameraMax": 1400,
+      "pulse": 2000
+    },
+    "easing": {
+      "standard": [
+        0.2,
+        0,
+        0,
+        1
+      ],
+      "exit": [
+        0.4,
+        0,
+        1,
+        1
+      ],
+      "move": [
+        0.4,
+        0,
+        0.2,
+        1
+      ]
+    }
+  },
+  "typography": {
+    "family": {
+      "sans": "Inter",
+      "mono": "JetBrains Mono"
+    },
+    "scale": {
+      "display": {
+        "family": "sans",
+        "size": 32,
+        "lineHeight": 40,
+        "weight": 600,
+        "tracking": -0.02
+      },
+      "titleLg": {
+        "family": "sans",
+        "size": 24,
+        "lineHeight": 32,
+        "weight": 600,
+        "tracking": -0.015
+      },
+      "title": {
+        "family": "sans",
+        "size": 20,
+        "lineHeight": 28,
+        "weight": 600,
+        "tracking": -0.01
+      },
+      "titleSm": {
+        "family": "sans",
+        "size": 16,
+        "lineHeight": 24,
+        "weight": 600,
+        "tracking": -0.005
+      },
+      "bodyLg": {
+        "family": "sans",
+        "size": 16,
+        "lineHeight": 24,
+        "weight": 400,
+        "tracking": 0
+      },
+      "body": {
+        "family": "sans",
+        "size": 14,
+        "lineHeight": 20,
+        "weight": 400,
+        "tracking": 0
+      },
+      "label": {
+        "family": "sans",
+        "size": 14,
+        "lineHeight": 20,
+        "weight": 500,
+        "tracking": 0
+      },
+      "labelSm": {
+        "family": "sans",
+        "size": 12,
+        "lineHeight": 16,
+        "weight": 500,
+        "tracking": 0.01
+      },
+      "caption": {
+        "family": "sans",
+        "size": 12,
+        "lineHeight": 16,
+        "weight": 400,
+        "tracking": 0.005
+      },
+      "monoDisplay": {
+        "family": "mono",
+        "size": 24,
+        "lineHeight": 32,
+        "weight": 600,
+        "tracking": 0.04
+      },
+      "mono": {
+        "family": "mono",
+        "size": 13,
+        "lineHeight": 20,
+        "weight": 500,
+        "tracking": 0
+      },
+      "monoSm": {
+        "family": "mono",
+        "size": 12,
+        "lineHeight": 16,
+        "weight": 400,
+        "tracking": 0
+      }
+    }
+  },
+  "breakpoint": {
+    "sm": 640,
+    "md": 768,
+    "lg": 1024,
+    "xl": 1280
+  },
+  "z": {
+    "map": 0,
+    "mapControls": 10,
+    "panel": 20,
+    "sheet": 30,
+    "banner": 40,
+    "toast": 50
+  }
+}

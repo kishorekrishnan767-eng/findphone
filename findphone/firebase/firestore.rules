@@ -1,0 +1,144 @@
+rules_version = '2';
+
+// FindPhone security rules. Design: docs/architecture.md §5.
+//
+//   locations/{phoneE164}
+//     get     anyone, by exact E.164 id (the web app has no login)
+//     list    never: no queries, no collection reads, no collection-group reads
+//     create  signed-in (anonymous) user writing ownerUid == their own uid
+//     update  the owner, OR a new uid presenting the previous hash-chain link (reclaim)
+//     delete  the owner
+//
+// Anything not matched below is denied.
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /locations/{phone} {
+      allow get: if isPhoneId(phone);
+      allow list: if false;
+
+      allow create: if isSignedIn()
+        && isPhoneId(phone)
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && isValidDoc(request.resource.data);
+
+      allow update: if isSignedIn()
+        && isValidDoc(request.resource.data)
+        && (isOwnerUpdate() || isReclaim());
+
+      allow delete: if isSignedIn()
+        && resource.data.ownerUid == request.auth.uid;
+    }
+
+    // ---------- identity ----------
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // E.164: '+', a non-zero country digit, 7–15 digits in total.
+    function isPhoneId(id) {
+      return id.matches('^[+][1-9][0-9]{6,14}$');
+    }
+
+    // ---------- schema ----------
+
+    // Every field is required (nullable ones are present as null) and no others are allowed.
+    // The phone number is the document id only; a `phone` field would be rejected here.
+    function docKeys() {
+      return ['schemaVersion', 'name', 'deviceCode', 'ownerUid', 'claimHash', 'platform', 'model',
+              'location', 'accuracy', 'battery', 'locatedAt', 'sharingEnabled', 'consent',
+              'createdAt', 'updatedAt', 'expireAt'];
+    }
+
+    // Fields the owner may change. Everything else (ownerUid, claimHash, deviceCode, createdAt,
+    // consent, schemaVersion) is immutable on a normal update. The document id can never change.
+    function ownerMutableKeys() {
+      return ['name', 'platform', 'model', 'location', 'accuracy', 'battery', 'locatedAt',
+              'sharingEnabled', 'updatedAt', 'expireAt'];
+    }
+
+    function isValidDoc(d) {
+      return d.keys().hasAll(docKeys())
+        && d.keys().hasOnly(docKeys())
+        && d.schemaVersion is int && d.schemaVersion == 1
+        && isName(d.name)
+        && d.deviceCode is string && d.deviceCode.matches('^FP-[0-9A-HJKMNP-TV-Z]{4}$')
+        && d.ownerUid is string && d.ownerUid.size() >= 1 && d.ownerUid.size() <= 128
+        && isChainLink(d.claimHash)
+        && d.platform in ['android', 'ios']
+        && d.model is string && d.model.size() >= 1 && d.model.size() <= 60
+        && d.sharingEnabled is bool
+        && isLocationBlock(d)
+        && (d.battery == null || (d.battery is int && d.battery >= 0 && d.battery <= 100))
+        && isConsent(d.consent)
+        && d.createdAt is timestamp
+        && d.updatedAt == request.time
+        && isExpiry(d.expireAt);
+    }
+
+    // 1–40 chars, no leading/trailing whitespace, no line breaks.
+    function isName(n) {
+      return n is string && n.size() >= 1 && n.size() <= 40 && n.matches('^\\S(.*\\S)?$');
+    }
+
+    function isChainLink(h) {
+      return h is string && h.matches('^[0-9a-f]{64}$');
+    }
+
+    // location, accuracy and locatedAt are all null or all set, and they can only be set while
+    // sharing is on. Pausing therefore removes the coordinates from the public document.
+    function isLocationBlock(d) {
+      return (d.location == null && d.accuracy == null && d.locatedAt == null)
+        || (d.sharingEnabled == true
+            && d.location is latlng
+            && d.location.latitude() >= -90 && d.location.latitude() <= 90
+            && d.location.longitude() >= -180 && d.location.longitude() <= 180
+            && d.accuracy is number && d.accuracy > 0 && d.accuracy <= 5000
+            && d.locatedAt is timestamp
+            && d.locatedAt <= request.time + duration.value(5, 'm')
+            && d.locatedAt >= request.time - duration.value(7, 'd'));
+    }
+
+    function isConsent(c) {
+      return c is map
+        && c.keys().hasAll(['locationSharing', 'acceptedAt', 'termsVersion'])
+        && c.keys().hasOnly(['locationSharing', 'acceptedAt', 'termsVersion'])
+        && c.locationSharing == true
+        && c.acceptedAt is timestamp
+        && c.acceptedAt <= request.time + duration.value(5, 'm')
+        && c.termsVersion is string && c.termsVersion.size() >= 1 && c.termsVersion.size() <= 16;
+    }
+
+    // TTL field: 7 days after this write, ±1 day of tolerance for device clock skew.
+    // updatedAt == request.time is enforced above, so this window is relative to updatedAt.
+    function isExpiry(t) {
+      return t is timestamp
+        && t >= request.time + duration.value(6, 'd')
+        && t <= request.time + duration.value(8, 'd');
+    }
+
+    // ---------- update paths ----------
+
+    function isOwnerUpdate() {
+      return resource.data.ownerUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(ownerMutableKeys());
+    }
+
+    // Reclaim after reinstall (architecture §5.4). The caller reveals the previous link of the
+    // owner's SHA-256 chain: sha256(new claimHash) must equal the stored claimHash. Ownership moves
+    // to the caller, and consent may be re-captured. deviceCode, createdAt and schemaVersion stay put.
+    // Replaying a revealed link fails because it is now the stored value, and hashing it moves
+    // forward along the chain, not back.
+    function isReclaim() {
+      return resource.data.ownerUid != request.auth.uid
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(ownerMutableKeys().concat(['ownerUid', 'claimHash', 'consent']))
+        && hashing.sha256(request.resource.data.claimHash).toHexString().lower()
+             == resource.data.claimHash;
+    }
+  }
+}

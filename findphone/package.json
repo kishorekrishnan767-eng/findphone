@@ -1,0 +1,30 @@
+{
+  "name": "findphone",
+  "private": true,
+  "description": "FindPhone monorepo: Flutter app (mobile/), web dashboard (web/), Firebase backend (firebase/).",
+  "workspaces": [
+    "firebase",
+    "web"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "setup": "npm install && npm run gen && cd mobile && flutter pub get",
+    "gen": "node scripts/gen-shared.mjs",
+    "gen:vectors": "node scripts/gen-claim-vectors.mjs",
+    "check:generated": "node scripts/gen-shared.mjs --check && node scripts/gen-claim-vectors.mjs --check",
+    "check:contrast": "node scripts/check-contrast.mjs",
+    "emulators": "npm run emulators -w firebase",
+    "test:rules": "npm test -w firebase",
+    "test:mobile": "cd mobile && flutter analyze && flutter test",
+    "test": "npm run check:generated && npm run check:contrast && npm run test:web && npm run test:mobile && npm run test:rules",
+    "dev:mobile": "cd mobile && flutter run --dart-define-from-file=.env",
+    "deploy:rules": "npm run deploy:rules -w firebase",
+    "deploy:indexes": "npm run deploy:indexes -w firebase",
+    "cleanup:stale": "npm run cleanup:stale -w firebase",
+    "dev:web": "npm run dev -w web",
+    "test:web": "npm run typecheck -w web && npm run lint -w web && npm test -w web",
+    "build:web": "npm run build -w web"
+  }
+}

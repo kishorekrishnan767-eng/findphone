@@ -1,0 +1,21 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "locations", "fieldPath": "expireAt", "ttl": true, "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "updatedAt", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "createdAt", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "locatedAt", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "location", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "accuracy", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "battery", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "claimHash", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "ownerUid", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "deviceCode", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "name", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "model", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "platform", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "sharingEnabled", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "schemaVersion", "indexes": [] },
+    { "collectionGroup": "locations", "fieldPath": "consent", "indexes": [] }
+  ]
+}
