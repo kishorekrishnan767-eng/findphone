@@ -51,6 +51,9 @@ final trackerProvider = Provider<Tracker>((ref) {
   return InProcessTracker(ref.watch(localStoreProvider));
 });
 
+/// True while the phone is playing a ring requested from the website.
+final ringingProvider = StreamProvider<bool>((ref) => ref.watch(trackerProvider).ringing);
+
 /// True while any network interface is up. A hint for the UI only; the sync worker's own
 /// results are the source of truth for whether writes are getting through.
 final onlineProvider = StreamProvider<bool>((ref) async* {

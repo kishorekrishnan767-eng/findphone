@@ -6,6 +6,7 @@ import '../models/consent_record.dart';
 /// firebase/firestore.rules: `updatedAt` is the server time and `expireAt` is ~7 days ahead.
 abstract final class LocationDoc {
   static const collection = 'locations';
+  static const ringsCollection = 'rings';
   static const schemaVersion = 1;
   static const ttl = Duration(days: 7);
 

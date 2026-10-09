@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../../../core/storage/local_store.dart';
+import '../../ring/data/ring_listener.dart';
 import '../domain/tracking_config.dart';
 import '../domain/tracking_snapshot.dart';
 import 'tracker.dart';
@@ -14,10 +17,18 @@ class InProcessTracker implements Tracker {
 
   final LocalStore _store;
   final _snapshots = StreamController<TrackingSnapshot>.broadcast();
+  final _ringing = StreamController<bool>.broadcast();
   TrackingEngine? _engine;
+  RingListener? _ring;
 
   @override
   Stream<TrackingSnapshot> get snapshots => _snapshots.stream;
+
+  @override
+  Stream<bool> get ringing => _ringing.stream;
+
+  @override
+  Future<void> stopRing() async => _ring?.stop();
 
   @override
   Future<void> configure({required bool restartOnBoot}) async {}
@@ -28,6 +39,11 @@ class InProcessTracker implements Tracker {
   @override
   Future<void> start({required TrackingMode mode}) async {
     _engine ??= buildTrackingEngine(store: _store, onSnapshot: _snapshots.add);
+    final reg = _store.registration;
+    if (_ring == null && reg != null) {
+      _ring = RingListener(db: FirebaseFirestore.instance, store: _store, onRinging: _ringing.add)
+        ..start(reg.phoneE164);
+    }
     await _engine!.start(mode);
   }
 
@@ -40,6 +56,8 @@ class InProcessTracker implements Tracker {
     await engine.pause();
     engine.dispose();
     _engine = null;
+    await _ring?.dispose();
+    _ring = null;
   }
 
   @override
@@ -47,5 +65,7 @@ class InProcessTracker implements Tracker {
     await _engine?.stop();
     _engine?.dispose();
     _engine = null;
+    await _ring?.dispose();
+    _ring = null;
   }
 }

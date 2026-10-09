@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -9,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/firebase/firebase_init.dart';
 import '../../../core/logging/logger.dart';
 import '../../../core/storage/local_store.dart';
+import '../../ring/data/ring_listener.dart';
 import '../domain/tracking_config.dart';
 import 'service_protocol.dart';
 import 'tracking_runtime.dart';
@@ -50,6 +52,15 @@ Future<void> backgroundMain(ServiceInstance service) async {
     onSnapshot: (s) => service.invoke(ServiceProtocol.snapshot, s.toMap()),
   );
 
+  // "Ring my phone" from the website plays here, so it works with the app closed.
+  final ring = RingListener(
+    db: FirebaseFirestore.instance,
+    store: store,
+    onRinging: (active) => service.invoke(ServiceProtocol.ringing, {'active': active}),
+  )..start(store.registration!.phoneE164);
+
+  service.on(ServiceProtocol.stopRing).listen((_) => ring.stop());
+
   service.on(ServiceProtocol.setMode).listen((args) {
     final foreground = args?['foreground'] == true;
     unawaited(engine.setMode(foreground ? TrackingMode.foreground : TrackingMode.background));
@@ -60,6 +71,7 @@ Future<void> backgroundMain(ServiceInstance service) async {
   });
 
   service.on(ServiceProtocol.pause).listen((_) async {
+    await ring.dispose();
     await engine.pause();
     service.invoke(ServiceProtocol.paused);
     engine.dispose();
@@ -67,6 +79,7 @@ Future<void> backgroundMain(ServiceInstance service) async {
   });
 
   service.on(ServiceProtocol.stop).listen((_) async {
+    await ring.dispose();
     await engine.stop();
     service.invoke(ServiceProtocol.stopped);
     engine.dispose();

@@ -313,6 +313,8 @@ Web counterpart: `VITE_LIVE_THRESHOLD_SECONDS` (default 120) in `web/.env`.
 
 ## 4. Web architecture
 
+> **Console redesign (latest).** The single-search page became a dashboard: header nav (Map, Devices, Activity, Security, Settings), a glass side panel and an inset map. State lives in a small store (`web/src/app/store.ts`). Every watched number has its own one-document listener (`features/lookup/deviceWatchers.ts`), which feeds a session trail, client-side safe-zone checks and an activity log. The map offers Satellite / Map / 3D (extruded OpenFreeMap buildings), a compass, fullscreen and a layers menu. It also shows landmark labels (Overpass), a searched-place pin (Photon), weather (Open-Meteo), addresses (Nominatim) and a live-location bar with an aerial preview. Ring writes `rings/{phone}` and watches for the phone's acknowledgement. One component tree serves every screen size, so crossing the tablet breakpoint never remounts the map. The notes below describe the lookup core, which is unchanged.
+
 - **Stack:** React 19, Vite, TypeScript (strict), Tailwind with CSS-variable tokens, MapLibre GL JS, `lucide-react`, `zod`, and the Firebase JS SDK (modular, Firestore + App Check only).
 - **No global state library.** The lookup is a reducer-driven state machine in `useDeviceLookup`:
 
@@ -332,7 +334,7 @@ idle → invalid
   - `seenAt = min(updatedAt, locatedAt)`. `now − seenAt < 2 min` → **Live**. Taking the *older* of the two means a reading delivered late after being offline (fresh `updatedAt`, old `locatedAt`) is not shown as Live. Phones refresh `locatedAt` on every heartbeat (§3.1), so a still phone stays Live.
   - Otherwise → **Last seen** with relative time and the exact `seenAt` timestamp in monospace.
 - **Rate limit:** a rolling window of 10 searches per 60 s, kept in `sessionStorage`. This is a UX guard against casual abuse, **not** a security control (see §6).
-- **Map:** `flyTo` with ease-out. The zoom comes from accuracy (≈ 17 for ≤ 20 m down to ≈ 13 for 1 km). The marker is interpolated with `requestAnimationFrame` over 600 ms (`motion.markerGlide`). The accuracy circle is a GeoJSON polygon. With reduced motion enabled, the map uses `jumpTo` and moves the marker instantly.
+- **Map:** satellite imagery by default (Esri World Imagery, no key; MapTiler if configured), always top-down. A radar overlay runs while a lookup is in flight. `flyTo` with ease-out. The zoom comes from accuracy (≈ 17 for ≤ 20 m down to ≈ 13 for 1 km). The marker is interpolated with `requestAnimationFrame` over 600 ms (`motion.markerGlide`). The accuracy circle is a GeoJSON polygon. With reduced motion enabled, the map uses `jumpTo` and moves the marker instantly.
 - **Layout:** a floating left panel on desktop (≥ 1024 px), a narrower floating panel on tablet, and a bottom sheet with a drag handle and two snap points on mobile.
 
 ---
@@ -390,6 +392,18 @@ Additions to your spec, and why:
 | `update` (reclaim) | new anonymous uid | `sha256(new.claimHash) == old.claimHash`; `ownerUid` becomes the caller; additionally only `claimHash` and `consent` may change. `deviceCode`, `createdAt` and `schemaVersion` stay put |
 | `delete` | owner | `resource.ownerUid == auth.uid` |
 | everything else | anyone | denied by default |
+
+**`rings/{phoneE164}`** (Ring my phone): `{ requestedAt: timestamp, ackAt: timestamp | null }`.
+
+| Operation | Who | Allowed when |
+|---|---|---|
+| `get` | anyone | valid E.164 ID (the web shows whether the phone acknowledged) |
+| `list` | anyone | **never** |
+| request (`create`/`update`) | anyone, no login | `requestedAt == request.time`, `ackAt == null`, the device's location doc exists with `sharingEnabled == true`, and (on update) ≥ 60 s since the last request |
+| acknowledge (`update`) | the device owner | only `ackAt` changes, to `request.time` |
+| `delete` | the device owner | part of "delete my data" (the ring doc goes first, while the location doc still proves ownership) |
+
+Ring is the only remote action. Lock or erase from a page without a login would let anyone who knows a number wipe a stranger's phone, so they are deliberately absent. 19 rules tests cover the table above (`firebase/tests/rings.test.ts`). One of them caught a missing `requestedAt == request.time` check on create during development.
 
 ### 5.4 Reclaim after reinstall: a hash chain, so the server never holds the secret
 

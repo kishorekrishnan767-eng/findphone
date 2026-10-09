@@ -38,6 +38,7 @@ dependencies:
   # UI
   lucide_icons_flutter: ^3.1.22
   url_launcher: ^6.3.3
+  flutter_ringtone_player: 4.0.0+4
 
 dev_dependencies:
   flutter_test:

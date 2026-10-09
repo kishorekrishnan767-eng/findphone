@@ -28,6 +28,13 @@ class AndroidServiceTracker implements Tracker {
       .map((m) => TrackingSnapshot.fromMap(m!));
 
   @override
+  Stream<bool> get ringing =>
+      _service.on(ServiceProtocol.ringing).map((m) => m?['active'] == true);
+
+  @override
+  Future<void> stopRing() async => _service.invoke(ServiceProtocol.stopRing);
+
+  @override
   Future<void> configure({required bool restartOnBoot}) => _service.configure(
         androidConfiguration: AndroidConfiguration(
           onStart: backgroundMain,

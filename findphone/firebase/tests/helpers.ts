@@ -37,10 +37,10 @@ export function useRulesEnv() {
     as(uid: string | null): Firestore {
       return modular(uid === null ? env.unauthenticatedContext() : env.authenticatedContext(uid));
     },
-    /** Writes the "given" state with rules bypassed. */
-    async seed(data: LocationDoc, id: string = PHONE): Promise<void> {
+    /** Writes the "given" state with rules bypassed (locations by default). */
+    async seed(data: LocationDoc, id: string = PHONE, collectionName = 'locations'): Promise<void> {
       await env.withSecurityRulesDisabled(async (ctx) => {
-        await setDoc(doc(modular(ctx), 'locations', id), data);
+        await setDoc(doc(modular(ctx), collectionName, id), data);
       });
     },
   };

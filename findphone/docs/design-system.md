@@ -210,7 +210,7 @@ Left-aligned inside the panel, not a centred hero: a 24 px icon in a 40 px `bg.s
 
 ### Banner
 
-A slim strip (32 px minimum), `labelSm`, 16 px icon. **Demo** banner: neutral (`status.paused` colours), always visible, not dismissible. **Offline / reconnecting**: `status.stale` colours. Banners never use the accent colour.
+A slim strip (32 px minimum), `labelSm`, 16 px icon. **Offline / reconnecting**: `status.stale` colours. Banners never use the accent colour.
 
 ### Bottom sheet (web on mobile widths)
 
@@ -230,7 +230,9 @@ A title, one paragraph and right-aligned actions: Ghost "Cancel", then Destructi
 | Accuracy circle | `map.accuracyFill` + 1.5 px `map.accuracyStroke`, geodesic radius = accuracy (m) |
 | Paused | No marker and no circle. The card explains why. |
 | Controls | Right edge, 16 px inset, a vertical stack of 44 px `bg.raised` buttons with `e2` and `md` radius. Zoom +/− are grouped, then recenter, then the style toggle. |
-| Basemap | Standard: OpenFreeMap **Positron** (greyscale, so the teal marker is the only colour) and its dark counterpart in dark mode. Satellite: MapTiler (needs a free key; the toggle is hidden without one). |
+| Basemap | **Satellite by default**, viewed straight down (pitch locked to 0). Keyless Esri World Imagery with a boundaries-and-places label overlay; MapTiler hybrid is used instead when `VITE_MAPTILER_KEY` is set. The layer toggle switches to Standard: OpenFreeMap Positron (light) / Dark. On imagery the accuracy circle gets a white edge, since teal disappears into vegetation and water. |
+| Searching | While a lookup is in flight, a radar sweeps over the map: three white rings expanding plus a rotating beam, centred in the uncovered map area (above the sheet on mobile). The panel shows a matching mini radar, "Searching…" and the masked number. Static rings only under reduced motion. |
+| Reveal | The result card staggers in (40 ms steps, info rows after the header), the status badge pops when its state changes, and the marker pops in with a single white ripple on first appearance. Buttons shrink 2% on press. All of it collapses to a short fade under reduced motion. |
 
 ---
 
@@ -348,7 +350,6 @@ The "Turn off" button uses the system `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` dia
 ```
  Desktop ≥1024                                          Mobile <768
 ┌──────────────────────────────────────────────────┐   ┌──────────────────────┐
-│ ⓘ Demo · For consenting test users only          │   │ ⓘ Demo · consenting… │
 │ ┌──────────────────────┐                   ┌──┐  │   │                ┌──┐  │
 │ │ ◎ FindPhone          │                   │+ │  │   │     (map)      │+ │  │
 │ │                      │                   │− │  │   │                │− │  │
@@ -428,7 +429,6 @@ Voice: plain, specific, calm, in the second person. Sentence case. Numbers are d
 
 | Where | Copy |
 |---|---|
-| Banner | Demo · For consenting test users only |
 | Heading / helper | **Find a phone** — Enter the number registered in the FindPhone app. |
 | Input label / placeholder | Mobile number / 98765 43210 |
 | Invalid | Enter a valid mobile number, for example 98765 43210. |

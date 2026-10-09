@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons_flutter/lucide_icons.dart';
 
+import '../../../core/di/providers.dart';
 import '../../../core/errors/app_failure.dart';
 import '../../../core/generated/tokens.g.dart';
 import '../../../core/time/time_format.dart';
@@ -60,6 +61,7 @@ class _SharingStatusCardState extends ConsumerState<SharingStatusCard> {
   Widget build(BuildContext context) {
     final c = context.fp;
     final ui = ref.watch(trackingControllerProvider);
+    final ringing = ref.watch(ringingProvider).value ?? false;
     final s = ui.snapshot;
     final paused = s.phase == TrackingPhase.paused;
 
@@ -106,6 +108,18 @@ class _SharingStatusCardState extends ConsumerState<SharingStatusCard> {
               paused ? 'Nothing is being shared.' : 'Waiting for the first location.',
               style: FpText.body.copyWith(color: c.textSecondary),
             ),
+          if (ringing) ...[
+            const SizedBox(height: FpSpace.s3),
+            FpBanner(
+              icon: LucideIcons.bellRing,
+              text: 'Someone rang this phone from the FindPhone website.',
+              kind: FpBannerKind.warning,
+              action: FpButton.secondary(
+                label: 'Stop',
+                onPressed: () => ref.read(trackerProvider).stopRing(),
+              ),
+            ),
+          ],
           if (paused) ...[
             const SizedBox(height: FpSpace.s2),
             Text(

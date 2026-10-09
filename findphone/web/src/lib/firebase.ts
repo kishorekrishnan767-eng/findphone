@@ -13,11 +13,13 @@ let db: Firestore | null = null;
 export function getDb(): Firestore {
   if (db) return db;
 
-  const app = initializeApp({
-    apiKey: env.firebase.apiKey || 'demo-api-key',
-    projectId: env.firebase.projectId || 'demo-findphone',
-    appId: env.firebase.appId || '1:000000000000:web:0000000000000000',
-  });
+  // Emulator mode always uses the demo project, whatever .env says: it matches `npm run emulators`
+  // and the demo- prefix guarantees local testing can never reach the real project.
+  const app = initializeApp(
+    env.useEmulators
+      ? { apiKey: 'demo-api-key', projectId: 'demo-findphone', appId: '1:000000000000:web:0000000000000000' }
+      : { apiKey: env.firebase.apiKey, projectId: env.firebase.projectId, appId: env.firebase.appId },
+  );
 
   if (env.useEmulators) {
     db = getFirestore(app);

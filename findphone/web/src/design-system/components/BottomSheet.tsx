@@ -11,16 +11,31 @@ const PEEK_PX = 176; // size.sheetPeek
 export function BottomSheet({
   expanded,
   onExpandedChange,
+  onHeightChange,
+  offset = 0,
   label,
   children,
 }: {
   expanded: boolean;
   onExpandedChange: (v: boolean) => void;
+  /** Rendered height in px, so the map can keep things centred in the part it can still see. */
+  onHeightChange?: (px: number) => void;
+  /** Distance from the bottom of the screen (e.g. above a tab bar). */
+  offset?: number;
   label: string;
   children: ReactNode;
 }) {
   const [dragY, setDragY] = useState<number | null>(null);
   const start = useRef<{ y: number; expanded: boolean } | null>(null);
+  const el = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const node = el.current;
+    if (!node || !onHeightChange) return;
+    const ro = new ResizeObserver(() => onHeightChange(node.getBoundingClientRect().height));
+    ro.observe(node);
+    return () => ro.disconnect();
+  }, [onHeightChange]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -49,14 +64,16 @@ export function BottomSheet({
 
   return (
     <section
+      ref={el}
       aria-label={label}
       className={cn(
         'fixed inset-x-0 bottom-0 z-(--fp-z-sheet) flex flex-col rounded-t-lg border-t border-line bg-raised shadow-e3',
         dragY === null && 'transition-[max-height] duration-250 ease-standard',
       )}
       style={{
-        maxHeight: expanded ? '85dvh' : `${PEEK_PX + Math.max(0, -(dragY ?? 0))}px`,
-        paddingBottom: 'env(safe-area-inset-bottom)',
+        bottom: offset,
+        maxHeight: expanded ? `calc(85dvh - ${offset}px)` : `${PEEK_PX + Math.max(0, -(dragY ?? 0))}px`,
+        paddingBottom: offset ? 0 : 'env(safe-area-inset-bottom)',
       }}
     >
       <button

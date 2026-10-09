@@ -6,6 +6,11 @@ import '../domain/tracking_snapshot.dart';
 abstract interface class Tracker {
   Stream<TrackingSnapshot> get snapshots;
 
+  /// True while the phone is playing a ring requested from the website.
+  Stream<bool> get ringing;
+
+  Future<void> stopRing();
+
   /// Starts (or keeps) sharing. Safe to call repeatedly.
   Future<void> start({required TrackingMode mode});
 

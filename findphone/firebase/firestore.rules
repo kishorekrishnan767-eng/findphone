@@ -32,6 +32,67 @@ service cloud.firestore {
         && resource.data.ownerUid == request.auth.uid;
     }
 
+    // rings/{phoneE164}: "Ring my phone" requests from the web, acknowledged by the phone.
+    //   { requestedAt: timestamp, ackAt: timestamp | null }. Holds no personal data beyond the id.
+    //   get     anyone (the web shows whether the phone acknowledged)
+    //   list    never
+    //   request anyone, only for a device that is currently sharing, at most once a minute
+    //   ack     the device's owner, stamping ackAt
+    //   delete  the device's owner (part of "delete my data")
+    // Ringing is the only remote action the web can trigger: lock or erase from a page with no
+    // login would let anyone who knows a number wipe a stranger's phone.
+    match /rings/{phone} {
+      allow get: if isPhoneId(phone);
+      allow list: if false;
+
+      allow create: if isPhoneId(phone)
+        && isRingShape(request.resource.data)
+        && request.resource.data.requestedAt == request.time
+        && request.resource.data.ackAt == null
+        && isSharingDevice(phone);
+
+      allow update: if isPhoneId(phone)
+        && isRingShape(request.resource.data)
+        && (isRingRequest(phone) || isRingAck(phone));
+
+      allow delete: if isSignedIn() && isDeviceOwner(phone);
+    }
+
+    function locationPath(phone) {
+      return /databases/$(database)/documents/locations/$(phone);
+    }
+
+    function isSharingDevice(phone) {
+      return exists(locationPath(phone)) && get(locationPath(phone)).data.sharingEnabled == true;
+    }
+
+    function isDeviceOwner(phone) {
+      return exists(locationPath(phone)) && get(locationPath(phone)).data.ownerUid == request.auth.uid;
+    }
+
+    function isRingShape(d) {
+      return d.keys().hasAll(['requestedAt', 'ackAt'])
+        && d.keys().hasOnly(['requestedAt', 'ackAt'])
+        && d.requestedAt is timestamp
+        && (d.ackAt == null || d.ackAt is timestamp);
+    }
+
+    // A new request: server time, clears the previous ack, 60 s after the last request.
+    function isRingRequest(phone) {
+      return request.resource.data.requestedAt == request.time
+        && request.resource.data.ackAt == null
+        && request.time > resource.data.requestedAt + duration.value(60, 's')
+        && isSharingDevice(phone);
+    }
+
+    // The owner's phone confirms it is ringing; nothing else may change.
+    function isRingAck(phone) {
+      return isSignedIn()
+        && isDeviceOwner(phone)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ackAt'])
+        && request.resource.data.ackAt == request.time;
+    }
+
     // ---------- identity ----------
 
     function isSignedIn() {

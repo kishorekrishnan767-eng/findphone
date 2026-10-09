@@ -1,10 +1,6 @@
 import type { StyleSpecification } from 'maplibre-gl';
+import type { MapMode } from '../../app/store';
 import { env } from '../../config/env';
-
-export type BaseLayer = 'standard' | 'satellite';
-
-/** The map opens on satellite imagery, seen straight down (pitch is locked to 0 in MapView). */
-export const DEFAULT_LAYER: BaseLayer = 'satellite';
 
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
 
@@ -35,14 +31,15 @@ const esriSatellite: StyleSpecification = {
   ],
 };
 
-export function mapStyle(layer: BaseLayer, dark: boolean): string | StyleSpecification {
-  if (layer === 'satellite') return env.map.satelliteStyle ?? esriSatellite;
+/** Satellite and 3D both sit on imagery (3D adds extruded buildings and tilt); Map is vector. */
+export function mapStyle(mode: MapMode, dark: boolean): string | StyleSpecification {
+  if (mode !== 'map') return env.map.satelliteStyle ?? esriSatellite;
   return dark ? env.map.darkStyle : env.map.lightStyle;
 }
 
 /** Stable key for "has the style actually changed?" checks (style objects aren't comparable by URL). */
-export function styleKey(layer: BaseLayer, dark: boolean): string {
-  return layer === 'satellite' ? 'satellite' : dark ? 'standard-dark' : 'standard-light';
+export function styleKey(mode: MapMode, dark: boolean): string {
+  return mode !== 'map' ? 'imagery' : dark ? 'vector-dark' : 'vector-light';
 }
 
 /** Initial view before any search: the default country, or the world. */

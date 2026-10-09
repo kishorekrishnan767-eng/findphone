@@ -1,0 +1,349 @@
+/* Console look: glass panels, teal glow, navigation, map labels, device illustration.
+   Everything is built on design-token variables (tokens.css), so light and dark themes both work. */
+
+/* Frosted panel: the map shows through faintly; the border catches a teal edge-light. */
+.fp-glass {
+  background: color-mix(in srgb, var(--fp-bg-raised) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fp-border-default) 85%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--fp-text-primary) 6%, transparent),
+    var(--fp-shadow-e2);
+}
+
+.fp-glass-strong {
+  background: color-mix(in srgb, var(--fp-bg-raised) 95%, transparent);
+  border: 1px solid var(--fp-border-default);
+  backdrop-filter: blur(22px) saturate(140%);
+  -webkit-backdrop-filter: blur(22px) saturate(140%);
+  box-shadow: var(--fp-shadow-e3);
+}
+
+/* Active / primary emphasis: accent edge plus a soft outer glow. */
+.fp-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--fp-accent-default) 55%, transparent),
+    0 0 24px -4px var(--fp-accent-glow),
+    inset 0 0 18px -6px var(--fp-accent-glow);
+}
+
+.fp-accent-wash {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--fp-accent-default) 22%, transparent),
+      color-mix(in srgb, var(--fp-accent-default) 8%, transparent)
+    ),
+    var(--fp-bg-subtle);
+}
+
+/* Brand mark: a location pin on a teal gradient. */
+.fp-brand-mark {
+  background: radial-gradient(120% 120% at 30% 20%, var(--fp-accent-hover), var(--fp-accent-pressed) 55%, var(--fp-map-marker));
+  color: var(--fp-text-on-accent);
+  box-shadow:
+    0 6px 18px -6px var(--fp-accent-glow),
+    inset 0 1px 0 color-mix(in srgb, white 40%, transparent);
+}
+
+.fp-brand-word {
+  background: linear-gradient(90deg, var(--fp-text-primary) 40%, var(--fp-accent-hover));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Backdrop behind the console so panels don't sit on flat black. */
+.fp-console-bg {
+  background:
+    radial-gradient(1200px 600px at 10% -10%, color-mix(in srgb, var(--fp-accent-default) 10%, transparent), transparent 60%),
+    radial-gradient(900px 500px at 110% 110%, color-mix(in srgb, var(--fp-accent-pressed) 8%, transparent), transparent 60%),
+    var(--fp-bg-canvas);
+}
+
+/* ---- Device illustration -------------------------------------------------------------- */
+
+.fp-phone {
+  position: relative;
+  border-radius: 14px;
+  padding: 3px;
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--fp-text-primary) 38%, transparent),
+    color-mix(in srgb, var(--fp-text-primary) 8%, transparent)
+  );
+  box-shadow:
+    0 10px 24px -10px var(--fp-accent-glow),
+    var(--fp-shadow-e2);
+}
+
+.fp-phone__screen {
+  position: relative;
+  height: 100%;
+  border-radius: 11px;
+  overflow: hidden;
+  background:
+    radial-gradient(90% 60% at 80% 15%, color-mix(in srgb, var(--fp-accent-hover) 70%, transparent), transparent 60%),
+    radial-gradient(80% 70% at 15% 85%, color-mix(in srgb, var(--fp-status-stale-dot) 55%, transparent), transparent 65%),
+    linear-gradient(170deg, var(--fp-accent-pressed), var(--fp-bg-canvas));
+}
+
+.fp-phone__camera {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 9999px;
+  background: var(--fp-bg-canvas);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--fp-text-primary) 25%, transparent);
+}
+
+/* ---- Map labels ------------------------------------------------------------------------- */
+
+.fp-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 200px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--fp-bg-canvas) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fp-text-primary) 14%, transparent);
+  color: var(--fp-text-primary);
+  font: 500 12px/1.25 var(--fp-font-sans);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: var(--fp-shadow-e2);
+  animation: fp-enter var(--fp-duration-slow) var(--fp-ease-standard) both;
+}
+
+.fp-label__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  color: white;
+  box-shadow: 0 0 0 2px color-mix(in srgb, white 85%, transparent);
+}
+
+.fp-label__icon[data-kind='education'] { background: var(--fp-status-stale-dot); }
+.fp-label__icon[data-kind='health'] { background: var(--fp-status-danger-dot); }
+.fp-label__icon[data-kind='safety'] { background: var(--fp-accent-pressed); }
+.fp-label__icon[data-kind='transport'] { background: var(--fp-map-marker); }
+.fp-label__icon[data-kind='fuel'],
+.fp-label__icon[data-kind='money'],
+.fp-label__icon[data-kind='worship'] { background: var(--fp-text-tertiary); }
+
+.fp-label__text {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Callout above the selected device's marker */
+.fp-device-tag {
+  position: absolute;
+  bottom: calc(100% + 12px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  white-space: nowrap;
+  background: color-mix(in srgb, var(--fp-bg-canvas) 86%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fp-accent-default) 60%, transparent);
+  color: var(--fp-text-primary);
+  font: 600 12px/1 var(--fp-font-sans);
+  box-shadow:
+    0 0 16px -4px var(--fp-accent-glow),
+    var(--fp-shadow-e2);
+  pointer-events: none;
+}
+
+.fp-device-tag::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 1px;
+  height: 10px;
+  background: color-mix(in srgb, var(--fp-accent-default) 70%, transparent);
+}
+
+/* Other watched devices: smaller, grey, clickable */
+.fp-marker--secondary {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.fp-marker--secondary .fp-marker__pulse,
+.fp-marker--secondary .fp-marker__ripple {
+  display: none;
+}
+
+.fp-marker--secondary .fp-marker__dot {
+  background: var(--fp-text-tertiary);
+  border-width: 2px;
+}
+
+/* A searched place */
+.fp-place-pin {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px 9999px 9999px 2px;
+  transform: rotate(-45deg);
+  background: var(--fp-status-danger-dot);
+  border: 2px solid white;
+  box-shadow: var(--fp-shadow-e2);
+  animation: fp-pin-drop 420ms var(--fp-ease-standard) both;
+}
+
+.fp-place-pin > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background: white;
+}
+
+@keyframes fp-pin-drop {
+  from {
+    transform: rotate(-45deg) translate(-18px, -18px);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-45deg);
+    opacity: 1;
+  }
+}
+
+/* ---- Small pieces ----------------------------------------------------------------------- */
+
+/* Accuracy "signal" bars */
+.fp-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 18px;
+}
+.fp-bars > span {
+  width: 4px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--fp-text-tertiary) 40%, transparent);
+}
+.fp-bars > span:nth-child(1) { height: 25%; }
+.fp-bars > span:nth-child(2) { height: 50%; }
+.fp-bars > span:nth-child(3) { height: 75%; }
+.fp-bars > span:nth-child(4) { height: 100%; }
+.fp-bars > span[data-on] { background: var(--fp-accent-default); }
+
+/* Battery meter */
+.fp-meter {
+  height: 6px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--fp-text-tertiary) 25%, transparent);
+  overflow: hidden;
+}
+.fp-meter > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  transition: width 600ms var(--fp-ease-standard);
+}
+
+/* Live orb in the bottom bar */
+.fp-orb {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 9999px;
+  color: var(--fp-accent-default);
+  background: radial-gradient(circle, color-mix(in srgb, var(--fp-accent-default) 25%, transparent), transparent 70%);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fp-accent-default) 45%, transparent);
+}
+.fp-orb[data-state='stale'] { color: var(--fp-status-stale-dot); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--fp-status-stale-dot) 45%, transparent); background: none; }
+.fp-orb[data-state='live']::before,
+.fp-orb[data-state='live']::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1.5px solid var(--fp-accent-default);
+  animation: fp-scan-ring 2400ms var(--fp-ease-move) infinite;
+}
+.fp-orb[data-state='live']::after { animation-delay: 1200ms; }
+
+/* Compass needle */
+.fp-needle {
+  transition: transform 120ms linear;
+}
+
+/* Thin scrollbars inside panels */
+.fp-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--fp-border-default) transparent;
+}
+
+@keyframes fp-rotate {
+  to { transform: rotate(360deg); }
+}
+.fp-spin { animation: fp-rotate 800ms linear infinite; }
+
+/* Tool / action tiles lift slightly on hover. */
+.fp-tile {
+  transition:
+    background-color var(--fp-duration-fast) var(--fp-ease-standard),
+    border-color var(--fp-duration-fast) var(--fp-ease-standard),
+    transform var(--fp-duration-fast) var(--fp-ease-standard),
+    box-shadow var(--fp-duration-fast) var(--fp-ease-standard);
+}
+.fp-tile:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--fp-accent-default) 45%, var(--fp-border-default));
+}
+.fp-tile:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-label,
+  .fp-place-pin { animation: fp-fade var(--fp-duration-fast) linear both; }
+  .fp-orb[data-state='live']::before,
+  .fp-orb[data-state='live']::after { animation: none; opacity: 0.5; }
+  .fp-meter > span,
+  .fp-needle,
+  .fp-tile { transition: none; }
+  .fp-tile:hover:not(:disabled),
+  .fp-tile:active:not(:disabled) { transform: none; }
+  .fp-spin { animation-duration: 2400ms; }
+}
+
+.fp-phone__glyph {
+  color: color-mix(in srgb, white 80%, transparent);
+}
+
+/* Landmark labels only at street level (MapView sets data-near at zoom ≥ 14). */
+[role='region']:not([data-near]) .fp-label {
+  display: none;
+}
+
+/* Map attribution stays above the floating live-location bar. */
+.maplibregl-ctrl-bottom-right {
+  z-index: 30;
+}

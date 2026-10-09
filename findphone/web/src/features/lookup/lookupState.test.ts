@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest';
 import { parsePhone } from '../../shared/phone/normalize';
 import type { DeviceRecord } from './domain/device';
-import { type LookupState, lookupReducer } from './useDeviceLookup';
+import { type LookupState, lookupReducer } from './lookupState';
 
 const r = parsePhone('9876543210', 'IN');
 if (!r.ok) throw new Error('fixture');

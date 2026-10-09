@@ -30,6 +30,12 @@ class AccountRepository {
   Future<void> deleteEverything() async {
     final reg = _store.registration;
     if (reg != null) {
+      // The ring document goes first: its delete rule needs the location document to prove ownership.
+      try {
+        await _db.collection(LocationDoc.ringsCollection).doc(reg.phoneE164).delete().timeout(const Duration(seconds: 10));
+      } catch (e) {
+        Log.warn('account.ring_delete_skipped');
+      }
       try {
         // Must reach the server: telling the user "deleted" while it's only queued would be false.
         await LocationDoc.ref(_db, reg.phoneE164).delete().timeout(const Duration(seconds: 15));

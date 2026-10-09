@@ -36,6 +36,7 @@ const tailwindColorName = (path) => {
     case 'accent':
       if (key === 'default') return 'accent';
       if (key === 'onSubtle') return 'on-accent-subtle';
+      if (key === 'glow') return 'glow';
       return `accent-${kebab(key)}`;
     case 'focus':
       return 'focus';

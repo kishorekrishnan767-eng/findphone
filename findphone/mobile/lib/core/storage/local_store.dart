@@ -26,6 +26,7 @@ class LocalStore extends ChangeNotifier {
   static const _reliabilitySeen = 'reliability_seen';
   static const _sharingPaused = 'sharing_paused';
   static const _lastSyncAt = 'last_sync_at';
+  static const _lastRingHandled = 'ring_last_handled';
 
   Future<void> reload() => _prefs.reload();
 
@@ -81,6 +82,14 @@ class LocalStore extends ChangeNotifier {
 
   /// Written by whichever isolate performs the sync. Doesn't notify: the router doesn't care.
   Future<void> setLastSyncAt(DateTime at) => _prefs.setInt(_lastSyncAt, at.millisecondsSinceEpoch);
+
+  /// requestedAt of the last ring request this phone acted on (so it never rings twice).
+  DateTime? get lastRingHandled {
+    final ms = _prefs.getInt(_lastRingHandled);
+    return ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+
+  Future<void> setLastRingHandled(DateTime at) => _prefs.setInt(_lastRingHandled, at.millisecondsSinceEpoch);
 
   /// Used by "Stop sharing and delete my data".
   Future<void> clearAll() async {

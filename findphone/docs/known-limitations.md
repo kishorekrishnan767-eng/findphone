@@ -75,6 +75,24 @@ Android wipes the app's secure storage on uninstall, so a reinstalled app can't 
 
 A number maps to exactly one record. Registering the same number on a second phone means reclaiming it, which moves sharing to the new phone.
 
+## Console features
+
+### 16. Anyone who knows the number can ring the phone
+
+Like viewing the location, ringing needs only the number. The rules cap it at once a minute per phone, and only while the phone is sharing. App Check blocks scripts. A person could still ring a stranger's phone once a minute. The alarm stops after 30 s, or from the app. **Fix before going public:** the same per-viewer authorisation that location lookups need.
+
+### 17. Ring needs the phone online, sharing and (on iOS) awake
+
+The phone hears the request through its Firestore listener, so an offline phone only rings if it reconnects within 2 minutes. On Android the listener runs in the foreground service, so it works with the app closed. On iOS (untested) it only works while the app is running. The ring has been verified in code, rules tests and unit tests, but not yet on a physical phone.
+
+### 18. History, safe zones and alerts run in the viewer's browser
+
+The phone shares only its latest position, by design. The movement trail is what the open page has seen. Safe-zone crossings and alerts are evaluated by the page, so they only fire while a FindPhone tab is open. Nothing is stored on a server.
+
+### 19. Addresses, landmarks, weather and place search use free public services
+
+Nominatim, Overpass, Open-Meteo and Photon (all OpenStreetMap-based, no keys) have fair-use limits and occasional outages. The app caches results and throttles requests (Nominatim ≤ 1 request/s), falls back between Overpass mirrors, and shows "unavailable" rather than breaking. A public launch should use a paid geocoding and places provider, or self-host.
+
 ## Operations
 
 ### 14. Free-tier quota
