@@ -1,4 +1,4 @@
-import data from '../../../../shared/countries.json';
+import { countriesData as data } from '../../generated/shared';
 
 export interface Country {
   iso: string;
@@ -11,7 +11,7 @@ export interface Country {
   example: string;
 }
 
-export const countries = data.countries as Country[];
+export const countries = data.countries as unknown as Country[];
 
 const byIso = new Map(countries.map((c) => [c.iso, c]));
 

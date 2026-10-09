@@ -1,0 +1,8 @@
+# Uploaded to Vercel: only what the build needs. Local env files stay local;
+# the deployment uses the environment variables set in the Vercel project.
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example

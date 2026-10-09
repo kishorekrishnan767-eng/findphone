@@ -1,0 +1,11 @@
+{
+  "$comment": "Production build: app code only. Tests also read ../shared/*.json and run inside the monorepo, so a host that uploads web/ alone (Vercel) can still build.",
+  "extends": "./tsconfig.json",
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
+  ]
+}

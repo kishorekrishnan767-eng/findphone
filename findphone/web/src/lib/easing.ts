@@ -1,4 +1,4 @@
-import tokens from '../../../shared/design-tokens.json';
+import { motionTokens } from '../generated/shared';
 
 /**
  * CSS-style cubic-bézier easing for requestAnimationFrame animations, so JS motion uses exactly
@@ -29,7 +29,7 @@ export function cubicBezier(x1: number, y1: number, x2: number, y2: number): (p:
   };
 }
 
-const [m1, m2, m3, m4] = tokens.motion.easing.move as [number, number, number, number];
+const [m1, m2, m3, m4] = motionTokens.easing.move;
 export const easeMove = cubicBezier(m1, m2, m3, m4);
-export const MARKER_GLIDE_MS = tokens.motion.duration.markerGlide;
-export const CAMERA_MAX_MS = tokens.motion.duration.cameraMax;
+export const MARKER_GLIDE_MS = motionTokens.duration.markerGlide;
+export const CAMERA_MAX_MS = motionTokens.duration.cameraMax;
